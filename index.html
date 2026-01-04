@@ -12,11 +12,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3035782856646159" crossorigin="anonymous"></script>
 
-  <!-- Minimal service worker registration (for future full PWA install) -->
+  <!-- Register service worker for PWA -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js');
       });
     }
   </script>
@@ -129,24 +129,24 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.onclick = () => {
+    });
+
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choice) => {
           if (choice.outcome === 'accepted') {
-            installBtn.textContent = 'Installed!';
+            installBtn.textContent = 'Installed Successfully!';
             installBtn.disabled = true;
           }
           deferredPrompt = null;
         });
-      };
+      }
     });
 
-    // If no PWA support, show helpful message instead of alert
-    installBtn.addEventListener('click', () => {
-      if (!deferredPrompt) {
-        installBtn.textContent = 'Use Chrome for PWA install';
-        setTimeout(() => { installBtn.textContent = 'Install Now'; }, 3000);
-      }
+    window.addEventListener('appinstalled', () => {
+      installBtn.textContent = 'Installed!';
+      installBtn.disabled = true;
     });
   </script>
 </body>
